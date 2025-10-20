@@ -81,7 +81,16 @@ pass
 
 ---
 ## Кастомные команды
-pass
+### csu
+Команда для создания суперпользователя по ключам: username, password.
+- Если не указано, то: username='admin', password='admin'.
+  ```bash
+  python manage.py csu
+  ```
+- Возможно указать свои данные:
+  ```
+  python manage.py csu --username ввести_логин --password ввести_пароль
+  ```
 
 [<- на начало](#содержание)
 
@@ -95,6 +104,19 @@ Online_Electronics_Retail/
 |   ├── settings.py # настройки проекта
 |   ├── urls.py # маршрутизация проета
 |   └── wsgi.py
+├── electro/ # приложение сети поставщиков продуктов
+|   ├── management/
+|   |   └── commands/ # кастомные команды
+|   |   |   └── csu # создание суперпользователя
+|   ├── migrations/ # пакет миграции моделей
+|   |   └── ...
+|   ├── admin.py 
+|   ├── apps.py
+|   ├── models.py # модели БД
+|   ├── serializaters.py # сериализаторы
+|   ├── tests.py 
+|   ├── urls.py # маршрутизация приложения
+|   └── views.py # конструктор контроллеров
 ├── .env
 ├── .flake8 # настройка для flake8
 ├── .gitignore
