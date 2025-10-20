@@ -7,7 +7,13 @@
 - [Запуск тестов](#запуск-тестов)
 - [Кастомные команды](#кастомные-команды)
 - [Структура проекта](#структура-проекта)
-
+- [Приложение electro](#приложение-electro)
+  - [Models electro](#models-electro)
+    - [Contact](#contact)
+  - [Permissions electro](#permissions-electro)
+  - [Serializers electro](#serializers-electro)
+  - [Urls electro](#urls-electro)
+  - [Views electro](#views-electro)
 ## Описание:
 
 Веб-приложение с API-интерфейсом и админ-панелью.
@@ -113,6 +119,7 @@ Online_Electronics_Retail/
 |   ├── admin.py 
 |   ├── apps.py
 |   ├── models.py # модели БД
+|   ├── permissions.py # права доступа
 |   ├── serializaters.py # сериализаторы
 |   ├── tests.py 
 |   ├── urls.py # маршрутизация приложения
@@ -125,6 +132,63 @@ Online_Electronics_Retail/
 ├── README.md
 └── requirements.txt # зависимости для pip
 ```
+
+[<- на начало](#содержание)
+
+---
+# Приложение electro:
+
+---
+## Models electro
+### Contact:
+Представление контактной информации
+- Атрибуты:
+  - email(EmailField): Электронная почта
+  - country(str): Страна
+  - city(str): Город
+  - street(str): Улица
+  - house_number(str): Номер дома
+
+[<- на начало](#содержание)
+
+---
+## Permissions electro:
+### IsActiveUser:
+Право авторизованного и активного пользователя
+
+[<- на начало](#содержание)
+
+---
+## Serializers electro:
+### ContactSerializer:
+Сериализатор для модели Contact
+- Отображаются поля:
+  - id(int): Уникальный идентификатор контакта.
+  - email(str): Email.
+  - country(str): Страна.
+  - city(str): Город.
+  - street(str): Улица.
+  - house_number(str): Номер дома.
+
+[<- на начало](#содержание)
+
+---
+
+## Urls electro:
+- Список и добавление контакта(-ов) (методы: **GET/POST**)  
+  http://127.0.0.1:8000/contact/
+- Получение/изменение/удаление контакта (методы: **GET/PUT/PATH/DELETE**)  
+  http://127.0.0.1:8000/contact/(pk)/
+  - где (pk) - это, целое число PrimaryKey, ID контакта
+
+[<- на начало](#содержание)
+
+---
+## Views electro:
+### ContactViewSet:
+Представление набора действий для модели Contact.  
+Позволяет выполнять операции с контактами:
+- отображение списка, создание, отображение, полное обновление, частичное обновление, удаление.
 
 [<- на начало](#содержание)
 

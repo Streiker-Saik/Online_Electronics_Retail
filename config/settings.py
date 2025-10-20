@@ -63,6 +63,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": ["electro.permissions.IsActiveUser"],
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
