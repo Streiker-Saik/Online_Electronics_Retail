@@ -1,3 +1,5 @@
+from typing import Type
+
 from django.db import models
 
 
@@ -11,6 +13,8 @@ class Contact(models.Model):
         street(str): Улица
         house_number(str): Номер дома
     """
+    objects: Type[models.Manager]
+
     email = models.EmailField(verbose_name="Электронная почта", help_text="Введите email")
     country = models.CharField(max_length=100, verbose_name="Страна", help_text="Введите страну")
     city = models.CharField(max_length=100, verbose_name="Город", help_text="Введите город")
