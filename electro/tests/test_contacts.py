@@ -44,7 +44,9 @@ class ContactTestCase(APITestCase):
                 "city": self.contact.city,
                 "street": self.contact.street,
                 "house_number": self.contact.house_number,
-            }, response.json())
+            },
+            response.json()
+        )
 
     def test_contact_create(self) -> None:
         """Тестирование создания контакта"""
@@ -59,17 +61,11 @@ class ContactTestCase(APITestCase):
         response = self.client.post(self.url_list, data=data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Contact.objects.count(), initial_count + 1)
-        self.assertEqual(
-            response.json(),
-            {
-                "id": initial_count + 1,
-                "email": "contact2@test.com",
-                "country": "Россия",
-                "city": "Москва",
-                "street": "Тверская улица",
-                "house_number": "5"
-            }
-        )
+        self.assertIn("id", response.json())
+
+        for key in data:
+            self.assertEqual(response.json()[key], data[key])
+
 
     def test_get_contact(self) -> None:
         """Тестирование получения контакта по id"""
@@ -111,7 +107,7 @@ class ContactTestCase(APITestCase):
             },
         )
 
-    def test_partial_update(self) -> None:
+    def test_partial_update_contact(self) -> None:
         """Тестирование частичного обновления контакта"""
         data = {"house_number": "20а"}
         response = self.client.patch(self.url_detail, data=data)
@@ -155,13 +151,7 @@ class PermissionsContactTestCase(APITestCase):
 
     def test_not_authenticated(self) -> None:
         """Тестирование доступа не авторизованного пользователя"""
-        data = {
-            "email": "contact1_update@test.com",
-            "country": "РФ",
-            "city": "Петербург",
-            "street": "Невский",
-            "house_number": "20а"
-        }
+        data = {"test": "test"}
 
         test_cases = [
             ("get", self.url_list, None),
@@ -181,13 +171,7 @@ class PermissionsContactTestCase(APITestCase):
     def test_user_not_action(self) -> None:
         """Тестирование доступа не активного пользователя"""
         self.client.force_authenticate(user=self.user)
-        data = {
-            "email": "contact1_update@test.com",
-            "country": "РФ",
-            "city": "Петербург",
-            "street": "Невский",
-            "house_number": "20а"
-        }
+        data = {"test": "test"}
 
         test_cases = [
             ("get", self.url_list, None),

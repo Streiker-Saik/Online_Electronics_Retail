@@ -8,12 +8,19 @@
 - [Кастомные команды](#кастомные-команды)
 - [Структура проекта](#структура-проекта)
 - [Приложение electro](#приложение-electro)
+  - [Admin electro](#admin-electro)
   - [Models electro](#models-electro)
     - [Contact](#contact)
+    - [Product](#product)
   - [Permissions electro](#permissions-electro)
   - [Serializers electro](#serializers-electro)
+    - [ContactSerializer](#contactserializer)
+    - [ProductSerializer](#productserializer)
   - [Urls electro](#urls-electro)
   - [Views electro](#views-electro)
+    - [ContactViewSet](#contactviewset)
+    - [ProductViewSet](#productviewset)
+
 ## Описание:
 
 Веб-приложение с API-интерфейсом и админ-панелью.
@@ -80,8 +87,23 @@
 [<- на начало](#содержание)
 
 ---
-## Запуск тестов:
-pass
+## Тестирование:
+- Запустить тесты 
+  ```bash
+  python manage.py test
+  ```
+- Запустить с покрытием тесты
+  ```bash
+  coverage run --source='.' manage.py test
+  ```
+    - Записать/обновить в файл html
+    ```bash
+    coverage html
+    ```
+    - Вывести в терминал
+    ```bash
+    coverage report
+    ```
 
 [<- на начало](#содержание)
 
@@ -116,6 +138,10 @@ Online_Electronics_Retail/
 |   |   |   └── csu # создание суперпользователя
 |   ├── migrations/ # пакет миграции моделей
 |   |   └── ...
+|   ├── tests/ # пакет тестов
+|   |   ├── __init__.py
+|   |   ├── test_contacts.py # тесты контактов
+|   |   └── test_products.py # тесты продуктов
 |   ├── admin.py 
 |   ├── apps.py
 |   ├── models.py # модели БД
@@ -137,6 +163,22 @@ Online_Electronics_Retail/
 
 ---
 # Приложение electro:
+## Admin electro:
+### ContactAdmin:
+Класс для работы администратора с контактами
+- Атрибуты:
+  - ordering - сортировка по email
+  - list_filter - фильтрация: страна, город
+  - list_display - выводит на экран: email, страна, город
+  - search_fields - поиск по: email, страна, город
+### ProductAdmin:
+Класс для работы администратора с продуктами
+- Атрибуты:
+  - ordering - сортировка по дате выхода на рынок
+  - list_display - выводит на экран: название, модель, дата выхода на рынок
+  - search_fields - поиск по: название, модель
+
+[<- на начало](#содержание)
 
 ---
 ## Models electro
@@ -148,13 +190,19 @@ Online_Electronics_Retail/
   - city(str): Город
   - street(str): Улица
   - house_number(str): Номер дома
+### Product:
+Представление продуктов
+- Атрибуты:
+  - name(str): Название
+  - model(str): Модель
+  - release_date(datetime): Дата выхода на рынок
 
 [<- на начало](#содержание)
 
 ---
 ## Permissions electro:
 ### IsActiveUser:
-Право авторизованного и активного пользователя
+Право активного пользователя
 
 [<- на начало](#содержание)
 
@@ -169,6 +217,13 @@ Online_Electronics_Retail/
   - city(str): Город.
   - street(str): Улица.
   - house_number(str): Номер дома.
+### ProductSerializer:
+Сериализатор для модели Product
+- Отображаются поля:
+  - id(int): Уникальный идентификатор продукта.
+  - name(str): Название.
+  - model(str): Модель.
+  - release_date(datetime): Дата выхода на рынок.
 
 [<- на начало](#содержание)
 
@@ -176,10 +231,15 @@ Online_Electronics_Retail/
 
 ## Urls electro:
 - Список и добавление контакта(-ов) (методы: **GET/POST**)  
-  http://127.0.0.1:8000/contact/
+  http://127.0.0.1:8000/contacts/
 - Получение/изменение/удаление контакта (методы: **GET/PUT/PATH/DELETE**)  
-  http://127.0.0.1:8000/contact/(pk)/
+  http://127.0.0.1:8000/contacts/(pk)/
   - где (pk) - это, целое число PrimaryKey, ID контакта
+- Список и добавление продукта(-ов) (методы: **GET/POST**)  
+  http://127.0.0.1:8000/products/
+- Получение/изменение/удаление продукта (методы: **GET/PUT/PATH/DELETE**)  
+  http://127.0.0.1:8000/products/(pk)/
+  - где (pk) - это, целое число PrimaryKey, ID продукта
 
 [<- на начало](#содержание)
 
@@ -187,6 +247,10 @@ Online_Electronics_Retail/
 ## Views electro:
 ### ContactViewSet:
 Представление набора действий для модели Contact.  
+Позволяет выполнять операции с контактами:
+- отображение списка, создание, отображение, полное обновление, частичное обновление, удаление.
+### ProductViewSet:
+Представление набора действий для модели Product.  
 Позволяет выполнять операции с контактами:
 - отображение списка, создание, отображение, полное обновление, частичное обновление, удаление.
 

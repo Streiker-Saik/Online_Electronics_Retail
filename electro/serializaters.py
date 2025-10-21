@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from electro.models import Contact
+from electro.models import Contact, Product
 
 
 class ContactSerializer(serializers.ModelSerializer):
@@ -17,4 +17,19 @@ class ContactSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Contact
+        fields = "__all__"
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для модели Product
+    Отображаются поля:
+        id(int): Уникальный идентификатор продукта.
+        name(str): Название.
+        model(str): Модель.
+        release_date(datetime): Дата выхода на рынок.
+    """
+
+    class Meta:
+        model = Product
         fields = "__all__"

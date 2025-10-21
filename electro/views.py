@@ -2,9 +2,9 @@ from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
 
-from electro.models import Contact
+from electro.models import Contact, Product
 from electro.permissions import IsActiveUser
-from electro.serializaters import ContactSerializer
+from electro.serializaters import ContactSerializer, ProductSerializer
 
 
 class ContactViewSet(ModelViewSet):
@@ -38,5 +38,40 @@ class ContactViewSet(ModelViewSet):
         return super().partial_update(request, *args, **kwargs)
 
     @swagger_auto_schema(operation_description="Представление для удаления контакта.")
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
+
+
+class ProductViewSet(ModelViewSet):
+    """
+    Представление набора действий для модели Product.
+    Позволяет выполнять операции с контактами:
+        отображение списка, создание, отображение, полное обновление, частичное обновление, удаление.
+    """
+    serializer_class = ProductSerializer
+    queryset = Product.objects.all()
+    permission_classes = [IsAuthenticated, IsActiveUser]
+
+    @swagger_auto_schema(operation_description="Представление для получения списка всех продуктов.")
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @swagger_auto_schema(operation_description="Представление для получения продукта.")
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)
+
+    @swagger_auto_schema(operation_description="Представление для создания нового продукта")
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
+    @swagger_auto_schema(operation_description="Представление для полного обновления продукта по идентификатору")
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)
+
+    @swagger_auto_schema(operation_description="Представление для частичного обновления продукта по идентификатору")
+    def partial_update(self, request, *args, **kwargs):
+        return super().partial_update(request, *args, **kwargs)
+
+    @swagger_auto_schema(operation_description="Представление для удаления продукта.")
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)

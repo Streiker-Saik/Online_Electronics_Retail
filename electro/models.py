@@ -27,3 +27,25 @@ class Contact(models.Model):
     class Meta:
         verbose_name = "контакт"
         verbose_name_plural = "контакты"
+
+
+class Product(models.Model):
+    """
+    Представление продуктов
+    Атрибуты:
+        name(str): Название
+        model(str): Модель
+        release_date(datetime): Дата выхода на рынок
+    """
+    objects: Type[models.Manager]
+
+    name = models.CharField(max_length=255, verbose_name="Название", help_text="Введите название")
+    model = models.CharField(max_length=100, verbose_name="Модель", help_text="Введите модель")
+    release_date  = models.DateField(verbose_name="Дата выхода на рынок", help_text="Введите дату выхода на рынок")
+
+    def __str__(self) -> str:
+        return f"{self.name} ({self.model})"
+
+    class Meta:
+        verbose_name = "продукт"
+        verbose_name_plural = "продукты"
