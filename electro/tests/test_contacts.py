@@ -1,14 +1,19 @@
+from django.urls import reverse
 from rest_framework import status
 from django.contrib.auth.models import User
 from rest_framework.test import APITestCase
+
+from electro.apps import ElectroConfig
 from electro.models import Contact
+
+app_name = ElectroConfig.name
 
 
 class ContactTestCase(APITestCase):
     """Представление тестирования контактов"""
 
     def setUp(self):
-        self.user = User.objects.create(username="user",)
+        self.user = User.objects.create(username="user", )
         self.client.force_authenticate(user=self.user)
         self.contact = Contact.objects.create(
             email="contact1@test.com",
@@ -17,9 +22,11 @@ class ContactTestCase(APITestCase):
             street="Невский проспект",
             house_number="20"
         )
+        self.url_list = reverse(f"{app_name}:contacts-list")
+        self.url_detail = reverse(f"{app_name}:contacts-detail", kwargs={"pk": self.contact.id})
 
-    def test_str_contacts(self) -> None:
-        """Тестирование строкового представления модели"""
+    def test_str_contact(self) -> None:
+        """Тестирование строкового представления модели контакта"""
         contact = self.contact
         expected_str = f"{contact.email}, {contact.country}, {contact.city}, {contact.street}, {contact.house_number}"
         actual_str = str(Contact.objects.get(email=contact.email))
@@ -27,7 +34,7 @@ class ContactTestCase(APITestCase):
 
     def test_contacts_list(self) -> None:
         """Тестирование получения списка контактов"""
-        response = self.client.get("/contacts/")
+        response = self.client.get(self.url_list)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn(
             {
@@ -49,7 +56,7 @@ class ContactTestCase(APITestCase):
             "house_number": "5"
         }
         initial_count = Contact.objects.count()
-        response = self.client.post("/contacts/", data=data)
+        response = self.client.post(self.url_list, data=data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(Contact.objects.count(), initial_count + 1)
         self.assertEqual(
@@ -66,7 +73,8 @@ class ContactTestCase(APITestCase):
 
     def test_get_contact(self) -> None:
         """Тестирование получения контакта по id"""
-        response = self.client.get(f"/contacts/{self.contact.id}/")
+        response = self.client.get(self.url_detail)
+        # response = self.client.get(f"/contacts/{self.contact.id}/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.json(),
@@ -89,7 +97,7 @@ class ContactTestCase(APITestCase):
             "street": "Невский",
             "house_number": "20а"
         }
-        response = self.client.put(f"/contacts/{self.contact.id}/", data=data)
+        response = self.client.put(self.url_detail, data=data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.json(),
@@ -106,7 +114,7 @@ class ContactTestCase(APITestCase):
     def test_partial_update(self) -> None:
         """Тестирование частичного обновления контакта"""
         data = {"house_number": "20а"}
-        response = self.client.patch(f"/contacts/{self.contact.id}/", data=data)
+        response = self.client.patch(self.url_detail, data=data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
             response.json(),
@@ -123,7 +131,7 @@ class ContactTestCase(APITestCase):
     def test_delete_contact(self) -> None:
         """Тестирование удаления контакта"""
         initial_count = Contact.objects.count()
-        response = self.client.delete(f"/contacts/{self.contact.id}/")
+        response = self.client.delete(self.url_detail)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Contact.objects.count(), initial_count - 1)
 
@@ -132,7 +140,7 @@ class PermissionsContactTestCase(APITestCase):
     """Представление тестирования контактов по правам доступа"""
 
     def setUp(self):
-        self.user = User.objects.create(username="user",)
+        self.user = User.objects.create(username="user", )
         self.user.is_active = False
         self.user.save()
         self.contact = Contact.objects.create(
@@ -142,6 +150,8 @@ class PermissionsContactTestCase(APITestCase):
             street="Невский проспект",
             house_number="20"
         )
+        self.url_list = reverse(f"{app_name}:contacts-list")
+        self.url_detail = reverse(f"{app_name}:contacts-detail", kwargs={"pk": self.contact.id})
 
     def test_not_authenticated(self) -> None:
         """Тестирование доступа не авторизованного пользователя"""
@@ -154,12 +164,12 @@ class PermissionsContactTestCase(APITestCase):
         }
 
         test_cases = [
-            ("get", "/contacts/", None),
-            ("get", f"/contacts/{self.contact.id}/", None),
-            ("post", "/contacts/", data),
-            ("patch", f"/contacts/{self.contact.id}/", data),
-            ("put", f"/contacts/{self.contact.id}/", data),
-            ("delete", f"/contacts/{self.contact.id}/", None)
+            ("get", self.url_list, None),
+            ("get", self.url_detail, None),
+            ("post", self.url_list, data),
+            ("patch", self.url_detail, data),
+            ("put", self.url_detail, data),
+            ("delete", self.url_detail, None)
         ]
         expected_status = status.HTTP_401_UNAUTHORIZED
 
@@ -180,12 +190,12 @@ class PermissionsContactTestCase(APITestCase):
         }
 
         test_cases = [
-            ("get", "/contacts/", None),
-            ("get", f"/contacts/{self.contact.id}/", None),
-            ("post", "/contacts/", data),
-            ("patch", f"/contacts/{self.contact.id}/", data),
-            ("put", f"/contacts/{self.contact.id}/", data),
-            ("delete", f"/contacts/{self.contact.id}/", None)
+            ("get", self.url_list, None),
+            ("get", self.url_detail, None),
+            ("post", self.url_list, data),
+            ("patch", self.url_detail, data),
+            ("put", self.url_detail, data),
+            ("delete", self.url_detail, None)
         ]
         expected_status = status.HTTP_403_FORBIDDEN
 
