@@ -14,6 +14,7 @@ class Contact(models.Model):
         street(str): Улица
         house_number(str): Номер дома
     """
+
     objects: Type[models.Manager]
 
     email = models.EmailField(verbose_name="Электронная почта", help_text="Введите email")
@@ -38,11 +39,12 @@ class Product(models.Model):
         model(str): Модель
         release_date(datetime): Дата выхода на рынок
     """
+
     objects: Type[models.Manager]
 
     name = models.CharField(max_length=255, verbose_name="Название", help_text="Введите название")
     model = models.CharField(max_length=100, verbose_name="Модель", help_text="Введите модель")
-    release_date  = models.DateField(verbose_name="Дата выхода на рынок", help_text="Введите дату выхода на рынок")
+    release_date = models.DateField(verbose_name="Дата выхода на рынок", help_text="Введите дату выхода на рынок")
 
     def __str__(self) -> str:
         return f"{self.name} ({self.model})"
@@ -71,12 +73,9 @@ class Network(models.Model):
         save(self, *args, **kwargs) -> None:
             Сохранение уровня и задолженности
     """
+
     objects: Type[models.Manager]
-    LEVEL_CHOICES = [
-        (0, "Завод"),
-        (1, "Розничная сеть"),
-        (2, "Индивидуальный предприниматель")
-    ]
+    LEVEL_CHOICES = [(0, "Завод"), (1, "Розничная сеть"), (2, "Индивидуальный предприниматель")]
 
     name = models.CharField(max_length=255, verbose_name="Название компании", help_text="Введите название компании")
     contacts = models.ForeignKey(
@@ -84,13 +83,10 @@ class Network(models.Model):
         on_delete=models.CASCADE,
         related_name="networks",
         verbose_name="Контакты",
-        help_text="Введите ID звена контактов"
+        help_text="Введите ID звена контактов",
     )
     products = models.ManyToManyField(
-        Product,
-        related_name="networks",
-        verbose_name="Продукты",
-        help_text="Введите ID продуктов"
+        Product, related_name="networks", verbose_name="Продукты", help_text="Введите ID продуктов"
     )
     supplier = models.ForeignKey(
         "self",
@@ -99,13 +95,13 @@ class Network(models.Model):
         blank=True,
         related_name="networks",
         verbose_name="Поставщик",
-        help_text="Введите ID звена поставщика"
+        help_text="Введите ID звена поставщика",
     )
     debt = models.DecimalField(
         max_digits=10,
         decimal_places=2,
         verbose_name="Задолженность",
-        help_text="Введите задолженность перед поставщиком"
+        help_text="Введите задолженность перед поставщиком",
     )
     level = models.IntegerField(
         editable=False,
@@ -134,7 +130,9 @@ class Network(models.Model):
         level = self.get_level()
         max_allowed_level = 2
         if level > max_allowed_level:
-            raise ValidationError(f'Максимальный допустимый уровень цепочки — {max_allowed_level}. Текущий уровень: {level}.')
+            raise ValidationError(
+                f"Максимальный допустимый уровень цепочки — {max_allowed_level}. Текущий уровень: {level}."
+            )
 
     def save(self, *args, **kwargs) -> None:
         """Сохранение уровня и задолженности"""
@@ -147,4 +145,3 @@ class Network(models.Model):
     class Meta:
         verbose_name = "звено сети"
         verbose_name_plural = "звенья сети"
-

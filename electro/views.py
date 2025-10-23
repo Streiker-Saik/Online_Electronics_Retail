@@ -1,11 +1,12 @@
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
-from django_filters.rest_framework import DjangoFilterBackend
-from electro.models import Contact, Product, Network
+
+from electro.models import Contact, Network, Product
 from electro.permissions import IsActiveUser
-from electro.serializaters import ContactSerializer, ProductSerializer, NetworkSerializer, NetworkUpdateSerializer, \
-    NetworkListSerializer
+from electro.serializaters import (ContactSerializer, NetworkListSerializer, NetworkSerializer,
+                                   NetworkUpdateSerializer, ProductSerializer)
 
 
 class ContactViewSet(ModelViewSet):
@@ -14,6 +15,7 @@ class ContactViewSet(ModelViewSet):
     Позволяет выполнять операции с контактами:
         отображение списка, создание, отображение, полное обновление, частичное обновление, удаление.
     """
+
     serializer_class = ContactSerializer
     queryset = Contact.objects.all()
     permission_classes = [IsAuthenticated, IsActiveUser]
@@ -49,6 +51,7 @@ class ProductViewSet(ModelViewSet):
     Позволяет выполнять операции с контактами:
         отображение списка, создание, отображение, полное обновление, частичное обновление, удаление.
     """
+
     serializer_class = ProductSerializer
     queryset = Product.objects.all()
     permission_classes = [IsAuthenticated, IsActiveUser]
@@ -92,6 +95,7 @@ class NetworkViewSet(ModelViewSet):
                 другие - получения сериализатора со всеми полями
 
     """
+
     queryset = Network.objects.all()
     permission_classes = [IsAuthenticated, IsActiveUser]
     filter_backends = [DjangoFilterBackend]

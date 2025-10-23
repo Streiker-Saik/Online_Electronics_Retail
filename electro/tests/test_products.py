@@ -1,19 +1,21 @@
+from django.contrib.auth.models import User
 from django.urls import reverse
 from rest_framework import status
-from django.contrib.auth.models import User
 from rest_framework.test import APITestCase
 
 from electro.apps import ElectroConfig
 from electro.models import Product
 
-
 app_name = ElectroConfig.name
+
 
 class ProductTestCase(APITestCase):
     """Представление тестирования контактов"""
 
     def setUp(self):
-        self.user = User.objects.create(username="user",)
+        self.user = User.objects.create(
+            username="user",
+        )
         self.client.force_authenticate(user=self.user)
         self.product = Product.objects.create(
             name="iPhone 14",
@@ -41,7 +43,7 @@ class ProductTestCase(APITestCase):
                 "model": self.product.model,
                 "release_date": self.product.release_date,
             },
-            response.json()
+            response.json(),
         )
 
     def test_product_create(self) -> None:
@@ -70,7 +72,7 @@ class ProductTestCase(APITestCase):
                 "name": self.product.name,
                 "model": self.product.model,
                 "release_date": self.product.release_date,
-            }
+            },
         )
 
     def test_update_product(self) -> None:
@@ -119,7 +121,9 @@ class PermissionsProductTestCase(APITestCase):
     """Представление тестирования продуктов по правам доступа"""
 
     def setUp(self):
-        self.user = User.objects.create(username="user",)
+        self.user = User.objects.create(
+            username="user",
+        )
         self.user.is_active = False
         self.user.save()
         self.product = Product.objects.create(
@@ -140,7 +144,7 @@ class PermissionsProductTestCase(APITestCase):
             ("post", self.url_list, data),
             ("patch", self.url_detail, data),
             ("put", self.url_detail, data),
-            ("delete", self.url_detail, None)
+            ("delete", self.url_detail, None),
         ]
         expected_status = status.HTTP_401_UNAUTHORIZED
 
@@ -160,7 +164,7 @@ class PermissionsProductTestCase(APITestCase):
             ("post", self.url_list, data),
             ("patch", self.url_detail, data),
             ("put", self.url_detail, data),
-            ("delete", self.url_detail, None)
+            ("delete", self.url_detail, None),
         ]
         expected_status = status.HTTP_403_FORBIDDEN
 

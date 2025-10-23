@@ -1,8 +1,8 @@
-from django.urls import path, include
+from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from electro.apps import ElectroConfig
-from electro.views import ContactViewSet, ProductViewSet, NetworkViewSet
+from electro.views import ContactViewSet, NetworkViewSet, ProductViewSet
 
 app_name = ElectroConfig.name
 

@@ -1,14 +1,12 @@
-from typing import Union
-
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
 
 from .apps import ElectroConfig
-from .models import Contact, Product, Network
-
+from .models import Contact, Network, Product
 
 app_name = ElectroConfig.name
+
 
 @admin.register(Contact)
 class ContactAdmin(admin.ModelAdmin):
@@ -22,9 +20,20 @@ class ContactAdmin(admin.ModelAdmin):
     """
 
     ordering = ("email",)
-    list_filter = ("country", "city",)
-    list_display = ("email", "country", "city",)
-    search_fields = ("email", "country", "city",)
+    list_filter = (
+        "country",
+        "city",
+    )
+    list_display = (
+        "email",
+        "country",
+        "city",
+    )
+    search_fields = (
+        "email",
+        "country",
+        "city",
+    )
 
 
 @admin.register(Product)
@@ -38,8 +47,15 @@ class ProductAdmin(admin.ModelAdmin):
     """
 
     ordering = ("release_date",)
-    list_display = ("name", "model", "release_date",)
-    search_fields = ("name", "model",)
+    list_display = (
+        "name",
+        "model",
+        "release_date",
+    )
+    search_fields = (
+        "name",
+        "model",
+    )
 
 
 @admin.register(Network)
@@ -58,11 +74,12 @@ class NetworkAdmin(admin.ModelAdmin):
         clear_debt(self, request, queryset) -> None:
             Очистка задолженности перед поставщиком
     """
+
     ordering = ("created_at",)
     list_display = ("name", "supplier_link", "debt", "level", "created_at")
     list_filter = ("contacts__city", "level")
     search_fields = ("name",)
-    actions = ['clear_debt']
+    actions = ["clear_debt"]
 
     def supplier_link(self, obj) -> str:
         """Ссылка на Поставщика. При отсутствии поставщика строка 'Нет поставщика'"""
@@ -70,9 +87,11 @@ class NetworkAdmin(admin.ModelAdmin):
             url = reverse(f"{app_name}:networks-detail", kwargs={"pk": obj.supplier.id})
             return format_html('<a href="{}">{}</a>', url, obj.supplier.name)
         return "Нет поставщика"
+
     supplier_link.short_description = "Поставщик"
 
     def clear_debt(self, request, queryset) -> None:
         """Очистка задолженности перед поставщиком"""
         queryset.update(debt=0)
+
     clear_debt.short_description = "Очистить задолженность перед поставщиком"

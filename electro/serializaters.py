@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from electro.models import Contact, Product, Network
+from electro.models import Contact, Network, Product
 
 
 class ContactSerializer(serializers.ModelSerializer):
@@ -51,7 +51,7 @@ class NetworkSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Network
-        fields = '__all__'
+        fields = "__all__"
 
 
 class NetworkListSerializer(serializers.ModelSerializer):
@@ -83,7 +83,7 @@ class NetworkListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Network
-        fields = '__all__'
+        fields = "__all__"
 
 
 class NetworkUpdateSerializer(serializers.ModelSerializer):
@@ -95,4 +95,4 @@ class NetworkUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Network
-        exclude = ('debt',)
+        exclude = ("debt",)

@@ -1,6 +1,6 @@
+from django.contrib.auth.models import User
 from django.urls import reverse
 from rest_framework import status
-from django.contrib.auth.models import User
 from rest_framework.test import APITestCase
 
 from electro.apps import ElectroConfig
@@ -13,14 +13,16 @@ class ContactTestCase(APITestCase):
     """Представление тестирования контактов"""
 
     def setUp(self):
-        self.user = User.objects.create(username="user", )
+        self.user = User.objects.create(
+            username="user",
+        )
         self.client.force_authenticate(user=self.user)
         self.contact = Contact.objects.create(
             email="contact1@test.com",
             country="Россия",
             city="Санкт-Петербург",
             street="Невский проспект",
-            house_number="20"
+            house_number="20",
         )
         self.url_list = reverse(f"{app_name}:contacts-list")
         self.url_detail = reverse(f"{app_name}:contacts-detail", kwargs={"pk": self.contact.id})
@@ -45,7 +47,7 @@ class ContactTestCase(APITestCase):
                 "street": self.contact.street,
                 "house_number": self.contact.house_number,
             },
-            response.json()
+            response.json(),
         )
 
     def test_contact_create(self) -> None:
@@ -55,7 +57,7 @@ class ContactTestCase(APITestCase):
             "country": "Россия",
             "city": "Москва",
             "street": "Тверская улица",
-            "house_number": "5"
+            "house_number": "5",
         }
         initial_count = Contact.objects.count()
         response = self.client.post(self.url_list, data=data)
@@ -65,7 +67,6 @@ class ContactTestCase(APITestCase):
 
         for key in data:
             self.assertEqual(response.json()[key], data[key])
-
 
     def test_get_contact(self) -> None:
         """Тестирование получения контакта по id"""
@@ -81,7 +82,7 @@ class ContactTestCase(APITestCase):
                 "city": self.contact.city,
                 "street": self.contact.street,
                 "house_number": self.contact.house_number,
-            }
+            },
         )
 
     def test_update_contact(self) -> None:
@@ -91,7 +92,7 @@ class ContactTestCase(APITestCase):
             "country": "РФ",
             "city": "Петербург",
             "street": "Невский",
-            "house_number": "20а"
+            "house_number": "20а",
         }
         response = self.client.put(self.url_detail, data=data)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -136,7 +137,9 @@ class PermissionsContactTestCase(APITestCase):
     """Представление тестирования контактов по правам доступа"""
 
     def setUp(self):
-        self.user = User.objects.create(username="user", )
+        self.user = User.objects.create(
+            username="user",
+        )
         self.user.is_active = False
         self.user.save()
         self.contact = Contact.objects.create(
@@ -144,7 +147,7 @@ class PermissionsContactTestCase(APITestCase):
             country="Россия",
             city="Санкт-Петербург",
             street="Невский проспект",
-            house_number="20"
+            house_number="20",
         )
         self.url_list = reverse(f"{app_name}:contacts-list")
         self.url_detail = reverse(f"{app_name}:contacts-detail", kwargs={"pk": self.contact.id})
@@ -159,7 +162,7 @@ class PermissionsContactTestCase(APITestCase):
             ("post", self.url_list, data),
             ("patch", self.url_detail, data),
             ("put", self.url_detail, data),
-            ("delete", self.url_detail, None)
+            ("delete", self.url_detail, None),
         ]
         expected_status = status.HTTP_401_UNAUTHORIZED
 
@@ -179,7 +182,7 @@ class PermissionsContactTestCase(APITestCase):
             ("post", self.url_list, data),
             ("patch", self.url_detail, data),
             ("put", self.url_detail, data),
-            ("delete", self.url_detail, None)
+            ("delete", self.url_detail, None),
         ]
         expected_status = status.HTTP_403_FORBIDDEN
 
