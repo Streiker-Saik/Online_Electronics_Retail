@@ -148,8 +148,13 @@ Online_Electronics_Retail/
 |   |   └── ...
 |   ├── tests/ # пакет тестов
 |   |   ├── __init__.py
+|   |   ├── test_admin_networks.py # тест админ панели звеньев сети
 |   |   ├── test_contacts.py # тесты контактов
-|   |   └── test_products.py # тесты продуктов
+|   |   ├── test_contacts_permissions.py # тесты доступа к контактам
+|   |   ├── test_products.py # тесты контактов
+|   |   ├── test_products_permissions.py # тесты доступа к продуктам
+|   |   ├── test_network.py # тесты звеьев цепи
+|   |   └── test_network_permissions.py.py # тесты доступа к звеьям цепи
 |   ├── admin.py 
 |   ├── apps.py
 |   ├── models.py # модели БД

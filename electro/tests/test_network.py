@@ -55,7 +55,6 @@ class NetworkTestCase(APITestCase):
 
         self.url_list = reverse(f"{app_name}:networks-list")
         self.url_detail = reverse(f"{app_name}:networks-detail", kwargs={"pk": self.network_zavod.id})
-        self.url_detail_max_level = reverse(f"{app_name}:networks-detail", kwargs={"pk": self.network_ip.id})
 
     def test_str_network(self) -> None:
         """Тестирование строкового представления модели сети"""
