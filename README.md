@@ -9,17 +9,25 @@
 - [Структура проекта](#структура-проекта)
 - [Приложение electro](#приложение-electro)
   - [Admin electro](#admin-electro)
+    - [ContactAdmin](#contactadmin)
+    - [ProductAdmin](#productadmin)
+    - [NetworkAdmin](#networkadmin)
   - [Models electro](#models-electro)
     - [Contact](#contact)
     - [Product](#product)
+    - [Network](#network)
   - [Permissions electro](#permissions-electro)
   - [Serializers electro](#serializers-electro)
     - [ContactSerializer](#contactserializer)
     - [ProductSerializer](#productserializer)
+    - [NetworkSerializer](#networkserializer)
+    - [NetworkListSerializer](#networklistserializer)
+    - [NetworkUpdateSerializer](#networkupdateserializer)
   - [Urls electro](#urls-electro)
   - [Views electro](#views-electro)
     - [ContactViewSet](#contactviewset)
     - [ProductViewSet](#productviewset)
+    - [NetworkViewSet](#networkviewset)
 
 ## Описание:
 
@@ -177,6 +185,19 @@ Online_Electronics_Retail/
   - ordering - сортировка по дате выхода на рынок
   - list_display - выводит на экран: название, модель, дата выхода на рынок
   - search_fields - поиск по: название, модель
+### NetworkAdmin:
+Класс для работы администратора со звеном сети
+- Атрибуты:
+  - ordering - сортировка по дате создания
+  - list_display - выводит на экран: название, ссылка на поставщика, задолженность, уровень звена, дата создания
+  - list_filter - фильтрация по: город контакта, уровень звена
+  - search_fields - поиск по: название,
+  - actions - clear_debt(очистка задолженности)
+- Методы:
+  - supplier_link(self, obj) -> str:  
+  Ссылка на Поставщика. При отсутствии поставщика строка 'Нет поставщика'
+  - clear_debt(self, request, queryset) -> None:  
+  Очистка задолженности перед поставщиком
 
 [<- на начало](#содержание)
 
@@ -196,6 +217,23 @@ Online_Electronics_Retail/
   - name(str): Название
   - model(str): Модель
   - release_date(datetime): Дата выхода на рынок
+### Network:
+Представление звена сети
+- Атрибуты:
+  - name (str): Название компании
+  - contacts (ForeignKey): Контактная информация
+  - products (ManyToManyField): Продукты
+  - supplier (ForeignKey): Поставщик, связанная модель с другим звеном сети
+  - debt (Decimal): Задолженность перед поставщиком
+  - level (int): Уровень звена в иерархии (0: Завод, 1: Розничная сеть, 2: ИП). Автоматическое заполнение 
+  - created_at (datetime): Дата и время создания. Автоматическое заполнение
+- Методы:
+  - get_level(self) -> int:  
+  Вычисление уровня цепочки. Уровни 0,1,2.
+  - clean(self) -> None:  
+  Проверка допустимого уровня звена. Если уровень больше 2 - ValidationError
+  - save(self, *args, **kwargs) -> None:  
+  Сохранение уровня и задолженности
 
 [<- на начало](#содержание)
 
@@ -224,6 +262,42 @@ Online_Electronics_Retail/
   - name(str): Название.
   - model(str): Модель.
   - release_date(datetime): Дата выхода на рынок.
+### NetworkSerializer:
+Сериализатор для модели Network
+- Отображаются поля:
+  - id(int): Уникальный идентификатор звена сети.
+  - name(str): Название.
+  - contacts (ForeignKey): ID контактов
+  - products (ManyToManyField): Список id продуктов
+  - supplier (ForeignKey): ID поставщика
+  - debt (Decimal): Задолженность перед поставщиком
+  - level (int): Уровень звена в иерархии (0, 1, 2)
+  - created_at (datetime): Дата и время создания
+### NetworkListSerializer:
+Сериализатор для списка моделей Network
+- Отображаются поля:
+  - id(int): Уникальный идентификатор звена сети.
+  - name(str): Название.
+  - contacts (ForeignKey): Контактная информация
+    - id(int): Уникальный идентификатор контакта.
+    - email(str): Email.
+    - country(str): Страна.
+    - city(str): Город.
+    - street(str): Улица.
+    - house_number(str): Номер дома.
+  - products (ManyToManyField): Список продуктов
+    - id(int): Уникальный идентификатор продукта.
+    - name(str): Название.
+    - model(str): Модель.
+    - release_date(datetime): Дата выхода на рынок.
+  - supplier (ForeignKey): Поставщик, связанная модель с другим звеном сети
+  - debt (Decimal): Задолженность перед поставщиком
+  - level (int): Уровень звена в иерархии (0, 1, 2)
+  - created_at (datetime): Дата и время создания
+### NetworkUpdateSerializer:
+Сериализатор для обновления модели Network
+- Исключены поля:
+  - debt (Decimal): Задолженность перед поставщиком
 
 [<- на начало](#содержание)
 
@@ -240,6 +314,14 @@ Online_Electronics_Retail/
 - Получение/изменение/удаление продукта (методы: **GET/PUT/PATH/DELETE**)  
   http://127.0.0.1:8000/products/(pk)/
   - где (pk) - это, целое число PrimaryKey, ID продукта
+- Список и добавление звена(-ев) сети (методы: **GET/POST**)  
+  http://127.0.0.1:8000/networks/
+  - фильтрация по стране (методы: **GET**)  
+  http://127.0.0.1:8000/networks/?=contacts__country=(country)
+    - где (country) - это, название страны
+- Получение/изменение/удаление звена сети (методы: **GET/PUT/PATH/DELETE**)  
+  http://127.0.0.1:8000/networks/(pk)/
+  - где (pk) - это, целое число PrimaryKey, ID звена сети
 
 [<- на начало](#содержание)
 
@@ -253,6 +335,17 @@ Online_Electronics_Retail/
 Представление набора действий для модели Product.  
 Позволяет выполнять операции с контактами:
 - отображение списка, создание, отображение, полное обновление, частичное обновление, удаление.
+### NetworkViewSet:
+Представление набора действий для модели Network.
+Фильтрация по стране.
+Позволяет выполнять операции с контактами:
+- отображение списка, создание, отображение, полное обновление, частичное обновление, удаление.
+- Методы:
+  - get_serializer_class(self):  
+  Получение сериализатора:
+    - "list" - получение полного сериализатора с продуктами и контактами
+    - "update", "partial_update" - закрыт доступ к полю задолженности
+    - другие - получения сериализатора со всеми полями
 
 [<- на начало](#содержание)
 
