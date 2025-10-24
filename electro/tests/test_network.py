@@ -26,6 +26,13 @@ class NetworkTestCase(APITestCase):
             street="Невский проспект",
             house_number="20",
         )
+        self.contact_usa = Contact.objects.create(
+            email="contact1@test.com",
+            country="USA",
+            city="New York",
+            street="5th Avenue",
+            house_number="350",
+        )
         self.product = Product.objects.create(
             name="iPhone 14",
             model="A2649",
@@ -45,7 +52,7 @@ class NetworkTestCase(APITestCase):
         )
         self.network_ip = Network.objects.create(
             name="ИП",
-            contacts=self.contact,
+            contacts=self.contact_usa,
             supplier=self.network_retail,
             debt=Decimal("123.45"),
         )
@@ -94,6 +101,17 @@ class NetworkTestCase(APITestCase):
         self.assertEqual(network_retail["supplier"], self.network_zavod.id)
         self.assertEqual(network_retail["debt"], str(self.network_retail.debt))
         self.assertEqual(network_retail["level"], 1)
+
+    def test_filter_networks_list(self) -> None:
+        """Тестирование получения отфильтрованного списка звеньев сети по стране"""
+        fiter_country = "Россия"
+        response = self.client.get(f"{self.url_list}?contacts__country={fiter_country}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response_data = response.json()
+        self.assertEqual(len(response_data), 2)
+        for data in response_data:
+            self.assertEqual(data["contacts"]["country"], fiter_country)
 
     def test_network_create(self) -> None:
         """Тестирование создания звена сети"""
